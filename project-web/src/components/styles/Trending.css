@@ -1,0 +1,36 @@
+/* client/src/components/styles/Trending.css */
+.trending {
+    padding: 20px;
+    color: #ff3333;
+}
+
+.trending h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.trending-main {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.trending-thumbnail {
+    background-color: #ccc;
+    width: 80%;
+    height: 250px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: black;
+}
+
+.nav-button {
+    background: none;
+    color: #00aaff;
+    font-size: 30px;
+    border: none;
+    cursor: pointer;
+}

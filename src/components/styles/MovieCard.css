@@ -1,0 +1,56 @@
+/* client/src/components/styles/MovieCard.css */
+.movie-card {
+    width: 190px;
+    height: 350px;
+    background-color: #222;
+    color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 10px;
+    text-align: center;
+}
+
+.movie-thumbnail {
+    position: relative;
+    background-color: #ccc;
+    height: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.add-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #00aaff;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.movie-info {
+    padding: 10px;
+}
+
+.movie-score {
+    font-size: 14px;
+    color: #ffdd00;
+}
+
+.movie-title {
+    font-size: 16px;
+    margin: 5px 0;
+}
+
+.playlist-button {
+    background: none;
+    color: #00aaff;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+}

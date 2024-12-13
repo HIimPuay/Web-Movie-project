@@ -1,13 +1,14 @@
 // client/src/components/Navbar.js
 import React from 'react';
 import './styles/Navbar.css';
+import { Link } from "react-router-dom";
 import { FaBars, FaSearch, FaBookmark, FaUser } from 'react-icons/fa';
 
 function Navbar() {
     return (
         <nav className="navbar">
             <div className="navbar-logo">
-                <img src="path_to_logo" alt="Logo" className="logo-image" />
+                <Link to="/"><img src="path_to_logo" alt="Logo" className="logo-image" /></Link>
                 <button className="menu-button">
                     <FaBars />
                     <span>MENU</span>
@@ -26,7 +27,7 @@ function Navbar() {
                 </button>
                 <button className="navbar-icon">
                     <FaUser />
-                    <span>Profile</span>
+                    <span><Link to="/Profile">Profile</Link></span>
                 </button>
             </div>
         </nav>

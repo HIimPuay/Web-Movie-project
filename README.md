@@ -8,4 +8,5 @@ npm install react-router-dom
 npm run dev 
 
 และเข้าไปที่ http://localhost:5173/
+
 notice any issue or error plz help yourself

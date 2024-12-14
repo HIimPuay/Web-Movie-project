@@ -1,6 +1,5 @@
 //Profile
 
-import './App.css';
 import Footer from './components/Footer.jsx';
 import Navbar from './components/Navbar.jsx';
 import UserProfile from './components/UserProfile.jsx';

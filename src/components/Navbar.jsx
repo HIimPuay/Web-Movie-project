@@ -6,13 +6,16 @@ import { FaBars, FaSearch, FaBookmark, FaUser } from 'react-icons/fa';
 
 function Navbar() {
     return (
+     
         <nav className="navbar">
             <div className="navbar-logo">
                 <Link to="/"><img src="path_to_logo" alt="Logo" className="logo-image" /></Link>
                 <button className="menu-button">
                     <FaBars />
-                    <span>MENU</span>
+                    <span><Link to="/Menu">MENU</Link></span>
+                    
                 </button>
+         
             </div>
             <div className="navbar-search">
                 <input type="text" placeholder="Search" />
@@ -23,7 +26,7 @@ function Navbar() {
             <div className="navbar-links">
                 <button className="navbar-icon">
                     <FaBookmark />
-                    <span>Playlist</span>
+                    <span><Link to="/Playlist">Playlist</Link></span>
                 </button>
                 <button className="navbar-icon">
                     <FaUser />
@@ -33,5 +36,5 @@ function Navbar() {
         </nav>
     );
 }
-console.log("Footer rendered");
+
 export default Navbar;

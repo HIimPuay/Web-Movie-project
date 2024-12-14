@@ -9,6 +9,9 @@ import {
 import Home from './Home';
 import ErrorPage from './Error';
 import Profile from './Profile';
+import Playlist from './Playlist';
+
+
 
 const router = createBrowserRouter([
   {
@@ -20,6 +23,11 @@ const router = createBrowserRouter([
     path: "/Profile",
     element: <Profile />,
   },
+  {
+    path: "/Playlist",
+    element: <Playlist />,
+  },
+
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(

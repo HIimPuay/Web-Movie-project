@@ -74,3 +74,24 @@
     font-size: 16px;
     gap: 5px;
 }
+
+.dropdown-menu {
+    position: absolute;
+    top: 50px;
+    right: 20px;
+    background-color: #444;
+    padding: 10px;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .dropdown-menu a {
+    color: white;
+    text-decoration: none;
+    padding: 8px 10px;
+  }
+  
+  .dropdown-menu a:hover {
+    background-color: #555;
+  }

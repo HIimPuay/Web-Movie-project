@@ -1,37 +1,81 @@
-// main.jsx
-import React from 'react';
+import React, { useState } from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
-import {
-  createBrowserRouter,
-  RouterProvider,
-} from "react-router-dom";
-import Home from './Home';
-import ErrorPage from './Error';
-import Profile from './Profile';
-import Playlist from './Playlist';
+import { createBrowserRouter, 
+  RouterProvider } from 'react-router-dom';
+import Home from './page/Home';
+import ErrorPage from './page/Error';
+import Profile from './page/Profile';
+import MoviePage from './page/MoviePage';
+import Login from './Login';
+import Register from './Register';
+import Navbar from './components/Navbar';
+import './index.css'
+import Category from './page/Category';
 
+function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+  const handleLogin = () => {
+    setIsLoggedIn(true);
+  };
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <Home />,
-    errorElement: <ErrorPage />,
-  },
-  {
-    path: "/Profile",
-    element: <Profile />,
-  },
-  {
-    path: "/Playlist",
-    element: <Playlist />,
-  },
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+  };
 
-]);
+  const router = createBrowserRouter([
+    {
+      path: '/',
+      element: (
+        <>
+          <Navbar isLoggedIn={isLoggedIn} onLogout={handleLogout} />
+          <Home />
+        </>
+      ),
+      errorElement: <ErrorPage />,
+    },
+    {
+      path: '/Profile',
+      element: (
+        <>
+          <Navbar isLoggedIn={isLoggedIn} onLogout={handleLogout} />
+          <Profile />
+        </>
+      ),
+    },
+    {
+      path: '/MoviePage',
+      element: (
+        <>
+          <Navbar isLoggedIn={isLoggedIn} onLogout={handleLogout} />
+          <MoviePage />
+        </>
+      ),
+    },
+    {
+      path: '/Category',
+      element: (
+        <>
+          <Navbar isLoggedIn={isLoggedIn} onLogout={handleLogout} />
+          <Category />
+        </>
+      ),
+    },
+    {
+      path: '/Login',
+      element: <Login onLogin={handleLogin} />,
+    },
+    {
+      path: '/register',
+      element: <Register onLogin={handleLogin} />,
+    },
+  ]);
 
-ReactDOM.createRoot(document.getElementById("root")).render(
+  return <RouterProvider router={router} />;
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <App />
   </React.StrictMode>
 );

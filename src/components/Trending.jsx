@@ -4,6 +4,7 @@ import './styles/Trending.css';
 
 
 function Trending() {
+    
     return (
         <div className="trending">
             <h2>Trending</h2>

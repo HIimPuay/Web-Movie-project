@@ -5,6 +5,7 @@ npm install
 npm install react-router-dom 
 npm install mysql2
 npm install mongoose
+npm install vite --save-dev
 
 หากต้องการรัน
 npm run dev 

@@ -25,21 +25,33 @@ db.connect((err) => {
     }
 });
 
-// ตัวอย่าง route เชื่อมกับ MySQL
-app.get('/mysql', (req, res) => {
-    db.query('SELECT id FROM users', (err, results) => {
+// สร้าง route สำหรับดึงข้อมูลภาพยนตร์
+app.get('/api/movies', (req, res) => {
+    const query = 'SELECT * FROM movies'; // เปลี่ยนตามตารางในฐานข้อมูล
+    db.query(query, (err, results) => {
         if (err) {
-            console.error('Error executing query:', err.message);
+            console.error('Error fetching movies:', err.message);
             return res.status(500).json({ error: 'Database query error' });
         }
         res.json(results);
     });
 });
 
-
-app.get('/api', (req, res) => {
-    res.json({ message: 'Hello from the server!' });
+app.get('/api/movies/:id', (req, res) => {
+    const { id } = req.params;
+    const query = 'SELECT * FROM movies WHERE movie_id = ?';
+    db.query(query, [id], (err, results) => {
+        if (err) {
+            console.error('Error fetching movie:', err.message);
+            return res.status(500).json({ error: 'Database query error' });
+        }
+        if (results.length === 0) {
+            return res.status(404).json({ error: 'Movie not found' });
+        }
+        res.json(results[0]);
+    });
 });
+
 
 
 
@@ -55,31 +67,6 @@ mongoose.connect(mongoURI, {
 })
 .then(() => console.log('Connected to MongoDB'))
 .catch((err) => console.error('Error connecting to MongoDB:', err.message));
-
-// สร้าง Schema และ Model
-const usersSchema = new mongoose.Schema({
-    name: String,
-    email: String
-});
-
-const User = mongoose.model('users', usersSchema);
-
-// ตัวอย่าง route เชื่อมกับ MongoDB
-app.get('/mongodb', async (req, res) => {
-    try {
-        const users = await User.find(); // ค้นหาข้อมูลใน MongoDB
-        res.json(users);
-    } catch (err) {
-        console.error('Error fetching data from MongoDB:', err.message);
-        res.status(500).json({ error: 'Database query error' });
-    }
-});
-
-
-
-
-
-
 
 
 const PORT = 8080;

@@ -3,6 +3,8 @@ import React, { useEffect, useRef, useState }  from 'react';
 import MovieCard from './MovieCard';
 import axios from "axios";
 import './styles/InTheater.css';
+import { Link } from 'react-router-dom';
+
 
 function InTheater() {
     const [movies, setMovies] = useState([]); // สร้าง state สำหรับเก็บข้อมูลภาพยนตร์
@@ -43,12 +45,14 @@ function InTheater() {
                 <button className="nav-button left">❮</button>
                 <div className="movie-cards" ref={comedyRef}>
                     {movies.map((movie, index) => (
+                        <Link to={`/movies/${movie.movie_id}`}>
                         <MovieCard 
                             key={index} 
                             title={movie.title} 
                             score={movie.score} 
                             image={movie.image} 
                         />
+                        </Link>
                     ))}
                 </div>
                 <button className="nav-button right">❯</button>

@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import MovieCard from './MovieCard';
 import './styles/Toprate.css';
+import { Link } from "react-router-dom";
 
 function Toprate() {
     const [movies, setMovies] = useState([]); // สร้าง state สำหรับเก็บข้อมูลภาพยนตร์
@@ -42,12 +43,14 @@ function Toprate() {
                 <button className="nav-button left" onClick={() => moveCarousel("left", comedyRef)}>❮</button>
                 <div className="movie-cards" ref={comedyRef}>
                     {movies.map((movie, index) => (
+                        <Link to={`/movies/${movie.movie_id}`}>
                         <MovieCard 
                             key={index} 
                             title={movie.title} 
                             score={movie.score} 
                             image={movie.image} 
                         />
+                        </Link>
                     ))}
                 </div>
                 <button className="nav-button right" onClick={() => moveCarousel("right", comedyRef)}>❯</button>

@@ -1,10 +1,11 @@
 import React from 'react';
 import './styles/MovieCard.css';
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
 
-function MovieCard({ id, title, score, image }) {
+function MovieCard({ movie_id, title, score, image }){
+
     return (
-        <Link to={`/movie/${id}`}>
             <div className="movie-card">
                 <div className="movie-thumbnail">
                     <img src={image} alt={title} />
@@ -14,7 +15,6 @@ function MovieCard({ id, title, score, image }) {
                     <h4 className="movie-title">{title}</h4>
                 </div>
             </div>
-        </Link>
     );
 }
 

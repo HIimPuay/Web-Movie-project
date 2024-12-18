@@ -52,21 +52,88 @@ app.get('/api/movies/:id', (req, res) => {
     });
 });
 
+app.get('/api/movies/:id/reviews', async (req, res) => {
+    const movieId = req.params.id;
+    try {
+        const [reviews] = await db.promise().query('SELECT * FROM review WHERE movie_id = ?', [movieId]);
+        res.json(reviews);
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to fetch reviews' });
+    }
+});
+
+app.post('/api/movies/:id/reviews', async (req, res) => {
+    const { username, rating, content } = req.body; // เปลี่ยนจาก comment เป็น content
+    console.log("Received data:", req.body);
+
+    if (!rating || !content) { // เปลี่ยนจาก comment เป็น content
+        return res.status(400).json({ error: 'Missing required fields: rating or content' });
+    }
+
+    try {
+        const reviewDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+        const [result] = await db.promise().query(
+            'INSERT INTO review (movie_id, review_name, content, review_date, rating, user_id) VALUES (?, ?, ?, ?, ?, ?)',
+            [req.params.id, username || 'Anonymous', content, reviewDate, rating, 1] // เปลี่ยนจาก comment เป็น content
+        );
+
+        const newReview = {
+            review_id: result.insertId,
+            movie_id: req.params.id,
+            review_name: username || 'Anonymous',
+            content, // เปลี่ยนจาก comment เป็น content
+            review_date: reviewDate,
+            rating,
+            user_id: 1
+        };
+
+        res.status(201).json(newReview);
+    } catch (err) {
+        console.error('Error adding review:', err.message);
+        res.status(500).json({ error: 'Failed to add review' });
+    }
+});
+
+// server.js (หรือไฟล์ server ที่คุณใช้งาน)
+app.get('/api/movies/category/:category', (req, res) => {
+    const { category } = req.params;
+
+    // กำหนด category_id ตามที่ต้องการ
+    const categoryMap = {
+        action: 1,
+        romance: 2,
+        comedy: 3,
+        drama: 4,
+        horror: 5
+    };
+
+    const categoryId = categoryMap[category];
+
+    if (!categoryId) {
+        return res.status(400).json({ error: "Invalid category" });
+    }
+
+    const query = `
+        SELECT * FROM movies WHERE category_id = ?`;
+
+    db.query(query, [categoryId], (err, results) => {
+        if (err) {
+            console.error('Error fetching movies by category:', err.message);
+            return res.status(500).json({ error: 'Internal Server Error' });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({ error: 'No movies found for this category' });
+        }
+
+        res.json(results);
+    });
+});
 
 
 
 
 
-// Mongodb
-const mongoose = require('mongoose');
-const mongoURI = 'mongodb://localhost:27017/movie_review_web';
-
-mongoose.connect(mongoURI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
-.then(() => console.log('Connected to MongoDB'))
-.catch((err) => console.error('Error connecting to MongoDB:', err.message));
 
 
 const PORT = 8080;

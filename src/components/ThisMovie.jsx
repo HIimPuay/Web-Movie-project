@@ -4,50 +4,69 @@ import axios from "axios";
 import "./styles/ThisMovie.css";
 
 function ThisMovie() {
-    const { id } = useParams(); // ดึง id จาก URL
-    const [movie, setMovie] = useState(null); // เก็บข้อมูลหนัง
-    const [comments, setComments] = useState([]);
+    const { id } = useParams(); // ดึง id จาก URL ด้วย useParams
+    const [movie, setMovie] = useState(null);
+    const [reviews, setReviews] = useState([]); // เก็บข้อมูลรีวิว
     const [popupVisible, setPopupVisible] = useState(false);
     const [selectedRating, setSelectedRating] = useState(0);
     const [username, setUsername] = useState("");
     const [comment, setComment] = useState("");
     const [totalRating, setTotalRating] = useState(0);
 
+    // Fetch movie and reviews data
     useEffect(() => {
-        // ดึงข้อมูลหนังจาก Backend ตาม id
-        const fetchMovie = async () => {
+        const fetchMovieData = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/api/movies/${id}`);
-                setMovie(response.data);
+                // ดึงข้อมูลหนัง
+                const movieResponse = await axios.get(`http://localhost:8080/api/movies/${id}`);
+                setMovie(movieResponse.data);
+
+                // ดึงข้อมูลรีวิว
+                const reviewResponse = await axios.get(`http://localhost:8080/api/movies/${id}/reviews`);
+                setReviews(reviewResponse.data);
             } catch (err) {
-                console.error("Error fetching movie data:", err.message);
+                console.error("Error fetching data:", err.message);
             }
         };
 
-        fetchMovie();
+        fetchMovieData();
     }, [id]);
 
     const handleAddComment = () => {
-        if (!comment || !selectedRating) {
+        if (!comment || selectedRating === 0) {
             alert("กรุณากรอกคอมเมนต์และเลือกคะแนน");
             return;
         }
-
-        const newComment = {
-            username: username || "ไม่ระบุชื่อ",
+    
+        const newReview = {
+            username: username || "ไม่ระบุชื่อ", // Default if username is empty
+            content: comment,
+            review_date: new Date().toISOString().split("T")[0], // Current date
             rating: selectedRating,
-            comment: comment,
+            movie_id: parseInt(id),
+            user_id: 1, // Adjust user_id as needed
         };
-
-        setComments([...comments, newComment]);
-        setTotalRating(totalRating + selectedRating);
-        setPopupVisible(false);
-        setUsername("");
-        setComment("");
-        setSelectedRating(0);
+    
+        axios
+            .post(`http://localhost:8080/api/movies/${id}/reviews`, newReview)
+            .then((response) => {
+                setReviews([...reviews, response.data]); // Update the reviews
+                setPopupVisible(false);
+                setUsername("");
+                setComment("");
+                setSelectedRating(0);
+            })
+            .catch((error) => {
+                console.error("Error posting review:", error.message);
+                alert("ไม่สามารถเพิ่มคอมเมนต์ได้. กรุณาลองใหม่");
+            });
     };
+    
+    
 
-    const averageRating = comments.length ? (totalRating / comments.length).toFixed(1) : 0;
+    const averageRating = reviews.length
+        ? (reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length).toFixed(1)
+        : 0;
 
     if (!movie) return <div>Loading...</div>;
 
@@ -71,11 +90,12 @@ function ThisMovie() {
             {/* Add Comments Section */}
             <div className="comments">
                 <h2>ความคิดเห็น</h2>
-                {comments.map((c, index) => (
-                    <div className="comment" key={index}>
-                        <h3>{c.username}</h3>
-                        <p className="rating">คะแนน: {c.rating}/10</p>
-                        <p>{c.comment}</p>
+                {reviews.map((review) => (
+                    <div className="comment" key={review.review_id}>
+                        <h3>{review.review_name}</h3>
+                        <p className="rating">คะแนน: {review.rating}/10</p>
+                        <p>{review.content}</p>
+                        <p className="date">{new Date(review.review_date).toLocaleDateString()}</p>
                     </div>
                 ))}
             </div>

@@ -1,11 +1,24 @@
-import React, { useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
+import axios from "axios";
 import "./styles/Category.css";
 import MovieCard from "./MovieCard";
-import { horrorMovies, comedyMovies } from "./data/movies";
+import { Link } from "react-router-dom";
 
-function MovieCategory() {
-    const horrorRef = useRef(null);
-    const comedyRef = useRef(null);
+function MovieCategory({ category }) {
+    const [moviesByCategory, setMoviesByCategory] = useState([]);
+    const categoryRef = useRef(null);
+
+    useEffect(() => {
+        const fetchMoviesByCategory = async () => {
+            try {
+                const response = await axios.get(`http://localhost:8080/api/movies/category/${category}`);
+                setMoviesByCategory(response.data);
+            } catch (error) {
+                console.error("Error fetching movie categories", error);
+            }
+        };
+        fetchMoviesByCategory();
+    }, [category]);
 
     const moveCarousel = (direction, ref) => {
         const carousel = ref.current;
@@ -19,30 +32,19 @@ function MovieCategory() {
 
     return (
         <div className="category">
-            <h1>Movie Categories</h1>
+            <h1>{category.charAt(0).toUpperCase() + category.slice(1)} Movies</h1>
 
-            {/* Horror Section */}
-            <h2>Horror</h2>
+            {/* Movie Section */}
             <div className="category-movies">
-                <button className="nav-button left" onClick={() => moveCarousel("left", horrorRef)}>❮</button>
-                <div className="movie-cards" ref={horrorRef}>
-                    {horrorMovies.map((movie, index) => (
+                <button className="nav-button left" onClick={() => moveCarousel("left", categoryRef)}>❮</button>
+                <div className="movie-cards" ref={categoryRef}>
+                    {moviesByCategory.map((movie, index) => (
+                        <Link to={`/movies/${movie.movie_id}`}>
                         <MovieCard key={index} title={movie.title} score={movie.score} image={movie.image} />
+                        </Link>
                     ))}
                 </div>
-                <button className="nav-button right" onClick={() => moveCarousel("right", horrorRef)}>❯</button>
-            </div>
-
-            {/* Comedy Section */}
-            <h2>Comedy</h2>
-            <div className="category-movies">
-                <button className="nav-button left" onClick={() => moveCarousel("left", comedyRef)}>❮</button>
-                <div className="movie-cards" ref={comedyRef}>
-                    {comedyMovies.map((movie, index) => (
-                        <MovieCard key={index} title={movie.title} score={movie.score} image={movie.image} />
-                    ))}
-                </div>
-                <button className="nav-button right" onClick={() => moveCarousel("right", comedyRef)}>❯</button>
+                <button className="nav-button right" onClick={() => moveCarousel("right", categoryRef)}>❯</button>
             </div>
         </div>
     );

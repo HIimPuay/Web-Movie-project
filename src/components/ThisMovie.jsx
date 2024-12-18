@@ -1,27 +1,26 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./styles/ThisMovie.css";
 
 function ThisMovie() {
-    const { id } = useParams(); // ดึง id จาก URL ด้วย useParams
+    const { id } = useParams(); // Fetch the movie ID from the URL
+    const navigate = useNavigate();
     const [movie, setMovie] = useState(null);
-    const [reviews, setReviews] = useState([]); // เก็บข้อมูลรีวิว
+    const [reviews, setReviews] = useState([]); // Store reviews
     const [popupVisible, setPopupVisible] = useState(false);
     const [selectedRating, setSelectedRating] = useState(0);
     const [username, setUsername] = useState("");
     const [comment, setComment] = useState("");
-    const [totalRating, setTotalRating] = useState(0);
+    const [error, setError] = useState("");
 
     // Fetch movie and reviews data
     useEffect(() => {
         const fetchMovieData = async () => {
             try {
-                // ดึงข้อมูลหนัง
                 const movieResponse = await axios.get(`http://localhost:8080/api/movies/${id}`);
                 setMovie(movieResponse.data);
 
-                // ดึงข้อมูลรีวิว
                 const reviewResponse = await axios.get(`http://localhost:8080/api/movies/${id}/reviews`);
                 setReviews(reviewResponse.data);
             } catch (err) {
@@ -32,36 +31,53 @@ function ThisMovie() {
         fetchMovieData();
     }, [id]);
 
-    const handleAddComment = () => {
+    const handleAddComment = async () => {
         if (!comment || selectedRating === 0) {
             alert("กรุณากรอกคอมเมนต์และเลือกคะแนน");
             return;
         }
     
+        // Get JWT token from localStorage
+        const token = localStorage.getItem("token");
+        if (!token) {
+            alert("กรุณาเข้าสู่ระบบก่อนเพิ่มคอมเมนต์");
+            navigate("/login");
+            return;
+        }
+    
+        // Get user_id from localStorage
+        const userId = localStorage.getItem("user_id");
+        if (!userId) {
+            alert("กรุณาเข้าสู่ระบบก่อนเพิ่มคอมเมนต์");
+            navigate("/login");
+            return;
+        }
+    
         const newReview = {
-            username: username || "ไม่ระบุชื่อ", // Default if username is empty
+            username: username || "ไม่ระบุชื่อ", // Default username if empty
             content: comment,
             review_date: new Date().toISOString().split("T")[0], // Current date
             rating: selectedRating,
             movie_id: parseInt(id),
-            user_id: 1, // Adjust user_id as needed
+            user_id: parseInt(userId), // Use the logged-in user's ID
         };
     
-        axios
-            .post(`http://localhost:8080/api/movies/${id}/reviews`, newReview)
-            .then((response) => {
-                setReviews([...reviews, response.data]); // Update the reviews
-                setPopupVisible(false);
-                setUsername("");
-                setComment("");
-                setSelectedRating(0);
-            })
-            .catch((error) => {
-                console.error("Error posting review:", error.message);
-                alert("ไม่สามารถเพิ่มคอมเมนต์ได้. กรุณาลองใหม่");
+        try {
+            const response = await axios.post(`http://localhost:8080/api/movies/${id}/reviews`, newReview, {
+                headers: {
+                    Authorization: `Bearer ${token}`, // Add JWT token to headers
+                },
             });
+            setReviews([...reviews, response.data]); // Update the reviews
+            setPopupVisible(false);
+            setUsername("");
+            setComment("");
+            setSelectedRating(0);
+        } catch (error) {
+            console.error("Error posting review:", error.message);
+            setError("ไม่สามารถเพิ่มคอมเมนต์ได้. กรุณาลองใหม่.");
+        }
     };
-    
     
 
     const averageRating = reviews.length
@@ -92,7 +108,7 @@ function ThisMovie() {
                 <h2>ความคิดเห็น</h2>
                 {reviews.map((review) => (
                     <div className="comment" key={review.review_id}>
-                        <h3>{review.review_name}</h3>
+                        <h3>{review.username}</h3>
                         <p className="rating">คะแนน: {review.rating}/10</p>
                         <p>{review.content}</p>
                         <p className="date">{new Date(review.review_date).toLocaleDateString()}</p>
@@ -112,6 +128,7 @@ function ThisMovie() {
                             &times;
                         </span>
                         <h2>ให้คะแนนและเขียนคอมเมนต์</h2>
+                        {error && <p className="error">{error}</p>}
 
                         <div className="star-rating">
                             {[...Array(10)].map((_, i) => (

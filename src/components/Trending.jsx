@@ -1,7 +1,7 @@
-// client/src/components/Trending.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios'; // หรือใช้ fetch หากไม่ต้องการใช้ axios
 import './styles/Trending.css';
+import { Link } from "react-router-dom";
 
 function Trending() {
     const [movies, setMovies] = useState([]); // สำหรับเก็บข้อมูลหนัง
@@ -45,7 +45,9 @@ function Trending() {
                 </div>
                 <button className="nav-button right" onClick={goRight}>❯</button>
                 <div className='movie-info'>
-                    <div className="movie-title">{currentMovie.title}</div>
+                    <Link to={`/movies/${currentMovie.movie_id}`} className="movie-link">
+                        <div className="movie-title">{currentMovie.title}</div>
+                    </Link>
                     <div className="movie-description">{currentMovie.des}</div> {/* แสดงคำบรรยาย */}
                 </div>
             </div>
@@ -54,4 +56,3 @@ function Trending() {
 }
 
 export default Trending;
-

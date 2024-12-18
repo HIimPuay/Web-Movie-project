@@ -25,10 +25,6 @@ function App() {
       .then(response => setMysqlData(response.data))
       .catch(error => console.error('Error fetching MySQL data:', error));
 
-    // ดึงข้อมูลจาก MongoDB
-    // axios.get("http://localhost:8080/mongodb")
-    //   .then(response => setMongodbData(response.data))
-    //   .catch(error => console.error('Error fetching MongoDB data:', error));
   }, []);
 
   const handleLogin = () => {

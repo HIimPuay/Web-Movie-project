@@ -2,20 +2,37 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
+import axios from 'axios';
 
 function Login({ onLogin }) {
+    const [userName, setUserName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [rememberMe, setRememberMe] = useState(false);
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // ตรวจสอบการล็อกอินที่นี่ หรือส่งข้อมูลไปที่ API
-        console.log('Logging in with:', email, password, rememberMe);
-        // หากล็อกอินสำเร็จ
-        onLogin();
-        navigate('/'); // ไปที่หน้า Profile เมื่อเข้าสู่ระบบสำเร็จ
+
+        if (password !== confirmPassword) {
+            setError('Passwords do not match.');
+            return;
+        }
+
+        try {
+            const response = await axios.post('http://localhost:8080/api/register', {
+                user_name: userName,
+                email,
+                password,
+            });
+            setSuccess(response.data.message);
+            setError('');
+            navigate('/login'); // Redirect to login page after success
+        } catch (err) {
+            setError(err.response?.data?.error || 'Something went wrong.');
+        }
     };
 
     const handleClose = () => {
@@ -26,9 +43,9 @@ function Login({ onLogin }) {
     return (
         <div className="login-container">
             <div className="login-box">
-                <botton className="close-button" onClick={handleClose}>
+                <button className="close-button" onClick={handleClose}>
                     ✖
-                </botton>
+                </button>
                 <div className="login-form">
                     <h2>Sign up</h2>
                     <p>If you already have an account register You Can <a href="/Login">Login here!</a></p>
@@ -43,8 +60,8 @@ function Login({ onLogin }) {
                         <label>User name</label>
                         <input 
                             type="text" 
-                            value={password} 
-                            onChange={(e) => setPassword(e.target.value)} 
+                            value={userName}
+                            onChange={(e) => setUserName(e.target.value)} 
                             required 
                         />
                         <label>Password</label>
@@ -57,8 +74,8 @@ function Login({ onLogin }) {
                         <label>Comfirm password</label>
                         <input 
                             type="password" 
-                            value={password} 
-                            onChange={(e) => setPassword(e.target.value)} 
+                            value={confirmPassword} 
+                            onChange={(e) => setConfirmPassword(e.target.value)} 
                             required 
                         />
                         <button type="submit">Register</button>

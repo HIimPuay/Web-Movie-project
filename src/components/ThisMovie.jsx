@@ -83,28 +83,29 @@ function ThisMovie() {
         // Display confirmation alert before deleting the review
         const confirmDelete = window.confirm("คุณแน่ใจว่าต้องการลบคอมเมนต์นี้?");
         if (!confirmDelete) return; // If the user cancels, exit the function
-    
+     
         const token = localStorage.getItem("token");
         if (!token) {
             alert("กรุณาเข้าสู่ระบบก่อนลบคอมเมนต์");
             navigate("/login");
             return;
         }
-    
+     
         try {
             await axios.delete(`http://localhost:8080/api/movies/${id}/reviews/${reviewId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
-    
+     
             // Remove the deleted review from the state
-            setReviews(reviews.filter((review) => review.review_id !== reviewId));
+            setReviews(reviews.filter((review) => review._id !== reviewId)); // Change to _id
         } catch (error) {
             console.error("Error deleting review:", error.message);
             alert("ไม่สามารถลบคอมเมนต์ได้. กรุณาลองใหม่.");
         }
     };
+    
     
 
     const averageRating = reviews.length

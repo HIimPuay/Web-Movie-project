@@ -21,7 +21,7 @@ function App() {
 
   useEffect(() => {
     // ดึงข้อมูลจาก MySQL
-    axios.get("http://localhost:8080/mysql")
+    axios.get("http://localhost:8080/api")
       .then(response => setMysqlData(response.data))
       .catch(error => console.error('Error fetching MySQL data:', error));
 

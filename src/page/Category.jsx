@@ -4,15 +4,15 @@ import Footer from "../components/Footer";
 import MovieCategory from "../components/MovieCategory";
 
 function Category() {
+    const categories = ["action", "romance", "comedy", "drama", "horror"];
+
     return (
-        <div className='landing'>
-            {/* แสดงแต่ละหมวดหมู่ */}
-            <MovieCategory category="action" />
-            <MovieCategory category="romance" />
-            <MovieCategory category="comedy" />
-            <MovieCategory category="drama" />
-            <MovieCategory category="horror" />
-            
+        <div className="landing">
+            {/* Map through categories and display MovieCategory component for each one */}
+            {categories.map((category, index) => (
+                <MovieCategory key={index} category={category} />
+            ))}
+
             <Footer />
         </div>
     );

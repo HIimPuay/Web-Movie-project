@@ -106,3 +106,10 @@ textarea {
   border-radius: 20px;
   margin: 20px;
 }
+.delete-btn {
+  background-color: #ff3333;
+}
+
+.rating {
+  color: #fff707;
+}

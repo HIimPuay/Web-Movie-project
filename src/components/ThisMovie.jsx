@@ -78,6 +78,33 @@ function ThisMovie() {
             setError("ไม่สามารถเพิ่มคอมเมนต์ได้. กรุณาลองใหม่.");
         }
     };
+
+    const handleDeleteReview = async (reviewId) => {
+        // Display confirmation alert before deleting the review
+        const confirmDelete = window.confirm("คุณแน่ใจว่าต้องการลบคอมเมนต์นี้?");
+        if (!confirmDelete) return; // If the user cancels, exit the function
+    
+        const token = localStorage.getItem("token");
+        if (!token) {
+            alert("กรุณาเข้าสู่ระบบก่อนลบคอมเมนต์");
+            navigate("/login");
+            return;
+        }
+    
+        try {
+            await axios.delete(`http://localhost:8080/api/movies/${id}/reviews/${reviewId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+    
+            // Remove the deleted review from the state
+            setReviews(reviews.filter((review) => review.review_id !== reviewId));
+        } catch (error) {
+            console.error("Error deleting review:", error.message);
+            alert("ไม่สามารถลบคอมเมนต์ได้. กรุณาลองใหม่.");
+        }
+    };
     
 
     const averageRating = reviews.length
@@ -99,7 +126,7 @@ function ThisMovie() {
                     <h2>{movie.title}</h2>
                     <p>{movie.des}</p>
                     <p>ความยาว: {movie.lenght} นาที</p>
-                    <p>คะแนนเฉลี่ย: {averageRating}/10</p>
+                    <p className="rating">คะแนนเฉลี่ย: {averageRating}/10</p>
                 </div>
             </div>
 
@@ -115,11 +142,12 @@ function ThisMovie() {
                         <p className="rating">คะแนน: {review.rating}/10</p>
                         <p>{review.content}</p>
                         <p className="date">{new Date(review.review_date).toLocaleDateString()}</p>
+                        <button className="delete-btn" onClick={() => handleDeleteReview(review.review_id)}>
+                            ลบ
+                        </button>
                     </div>
                 ))}
             </div>
-
-            
 
             {/* Popup */}
             {popupVisible && (

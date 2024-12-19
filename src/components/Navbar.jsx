@@ -87,7 +87,7 @@ function Navbar({ isLoggedIn, onLogout }) {
                                 <FaUser /> Profile
                             </Link>
                         </button>
-                        <button onClick={onLogout}>Logout</button>
+                        <button className='logout-btn' onClick={onLogout}>Logout</button>
                     </>
                 )}
             </div>

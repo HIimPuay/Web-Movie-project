@@ -81,3 +81,13 @@
     background-size: cover;
     background-position: center;
 }
+
+.remember-me {
+    display: flex;
+    align-items: center;
+    margin-right: 280px;
+}
+
+.remember-me label {
+    width: 250px;
+}

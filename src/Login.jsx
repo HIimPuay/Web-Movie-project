@@ -45,9 +45,9 @@ function Login({ onLogin }) {
     return (
         <div className="login-container">
             <div className="login-box">
-                <button className="close-button" onClick={handleClose}>
+                <div className="close-button" onClick={handleClose}>
                     ✖
-                </button>
+                </div>
                 <div className="login-form">
                     <h2>Sign in</h2>
                     {error && <p className="error-message">{error}</p>}
@@ -67,12 +67,13 @@ function Login({ onLogin }) {
                             required 
                         />
                         <div className="remember-me">
+                            <label>Remember me</label>
                             <input 
+                            className='checkbox'
                                 type="checkbox" 
                                 checked={rememberMe} 
                                 onChange={() => setRememberMe(!rememberMe)} 
                             />
-                            <label>Remember me</label>
                         </div>
                         <button type="submit">Login</button>
                     </form>

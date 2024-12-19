@@ -1,16 +1,23 @@
-/* userimg-item */
 .UserProfile {
     padding: 20px;
     color: #f0f0f0;
-    margin-left: 50px;
     display: flex;
+    flex-direction: column;
     align-items: center;
     position: relative;
+    text-align: center; /* Centers text */
+    margin: 50px;
+    background-color: #e7e7e719;
+    border-radius: 20px;
 }
 
 .UserProfile h2 {
-    font-size: 64px;
+    font-size: 32px;
     margin-bottom: 10px;
+}
+
+.UserProfile-thumbnail {
+    margin-top: 20px;
 }
 
 .userimg-item {
@@ -23,21 +30,28 @@
     justify-content: center;
     flex-shrink: 0;
     margin: 10px;
-    overflow: hidden; 
-    object-fit: cover
+    overflow: hidden;
+    object-fit: cover;
+    position: relative;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Adds a subtle shadow for better focus */
 }
 
-.logout-btn {
-    background-color: #f63b3b;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 16px;
-    margin-top: 30px;
+.userimg-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
 }
 
-.logout-btn:hover{
-    background-color: #f76767;
+.UserProfile h1 {
+    font-size: 24px;
+    margin: 10px 0;
 }
+
+.UserProfile h4 {
+    font-size: 18px;
+    color: #b0b0b0;
+    margin-bottom: 10px;
+}
+
+

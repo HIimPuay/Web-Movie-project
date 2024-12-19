@@ -109,7 +109,7 @@ app.post('/api/movies/:id/reviews', authenticateToken, async (req, res) => {
 });
 
 // Fetch user profile (Protected Route)
-app.get('/api/user/profile', (req, res) => {
+app.get('/api/user/profile', authenticateToken, (req, res) => {
     const token = req.headers.authorization?.split(' ')[1];
 
     if (!token) {
@@ -120,10 +120,8 @@ app.get('/api/user/profile', (req, res) => {
         const secret = process.env.JWT_SECRET;
         const decoded = jwt.verify(token, secret);
 
-        // ดึง user_id จาก token ที่ decode
-        const userId = decoded.userId;
+        const userId = decoded.user_id; // Ensure 'user_id' is part of the payload
 
-        // Query จากฐานข้อมูล
         db.query('SELECT user_id, user_name, email FROM users WHERE user_id = ?', [userId], (err, results) => {
             if (err) {
                 console.error('Database error:', err.message);
@@ -134,7 +132,6 @@ app.get('/api/user/profile', (req, res) => {
                 return res.status(404).json({ error: 'User not found' });
             }
 
-            // ส่งข้อมูล user กลับไปยัง frontend
             const user = results[0];
             res.json(user);
         });
@@ -143,6 +140,8 @@ app.get('/api/user/profile', (req, res) => {
         res.status(401).json({ error: 'Invalid token' });
     }
 });
+
+
 
 
 
@@ -273,6 +272,106 @@ app.delete('/api/movies/:id', (req, res) => {
         }
     });
 });
+
+
+const Joi = require('joi');
+
+
+// Validation schema for updating reviews
+const updateReviewSchema = Joi.object({
+    rating: Joi.number().min(1).max(5).required(),
+    content: Joi.string().trim().required(),
+});
+
+// Update a review (Protected Route)
+app.put('/api/movies/:movieId/reviews/:reviewId', authenticateToken, async (req, res) => {
+    const { movieId, reviewId } = req.params;
+    const { rating, content } = req.body;
+
+    // Validate input
+    const { error } = updateReviewSchema.validate({ rating, content });
+    if (error) {
+        return res.status(400).json({ error: error.details[0].message });
+    }
+
+    try {
+        // Verify that the review belongs to the authenticated user
+        const [existingReview] = await db.promise().query(
+            'SELECT * FROM review WHERE review_id = ? AND user_id = ?',
+            [reviewId, req.user.user_id]
+        );
+
+        if (existingReview.length === 0) {
+            return res.status(403).json({ error: 'You can only edit your own reviews.' });
+        }
+
+        // Update the review
+        await db.promise().query(
+            'UPDATE review SET rating = ?, content = ? WHERE review_id = ? AND movie_id = ?',
+            [rating, content, reviewId, movieId]
+        );
+
+        res.json({ message: 'Review updated successfully.' });
+    } catch (err) {
+        console.error('Error updating review:', err.message);
+        res.status(500).json({ error: 'Failed to update review.' });
+    }
+});
+
+
+// Delete a review (Protected Route)
+app.delete('/api/movies/:movieId/reviews/:reviewId', authenticateToken, async (req, res) => {
+    const { movieId, reviewId } = req.params;
+
+    try {
+        // Verify that the review belongs to the authenticated user
+        const [existingReview] = await db.promise().query(
+            'SELECT * FROM review WHERE review_id = ? AND user_id = ?',
+            [reviewId, req.user.user_id]
+        );
+
+        if (existingReview.length === 0) {
+            return res.status(403).json({ error: 'You can only delete your own reviews.' });
+        }
+
+        // Delete the review
+        const [result] = await db.promise().query(
+            'DELETE FROM review WHERE review_id = ? AND movie_id = ?',
+            [reviewId, movieId]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Review not found.' });
+        }
+
+        res.json({ message: 'Review deleted successfully.' });
+    } catch (err) {
+        console.error('Error deleting review:', err.message);
+        res.status(500).json({ error: 'Failed to delete review.' });
+    }
+});
+
+app.put('/api/user/profile', authenticateToken, (req, res) => {
+    const { user_name } = req.body;
+    const userId = req.user.user_id;
+
+    if (!user_name) {
+        return res.status(400).json({ error: 'Username is required.' });
+    }
+
+    db.query(
+        'UPDATE users SET user_name = ? WHERE user_id = ?',
+        [user_name, userId],
+        (err, results) => {
+            if (err) {
+                console.error('Database error:', err);
+                return res.status(500).json({ error: 'Failed to update username.' });
+            }
+            res.json({ message: 'Username updated successfully.' });
+        }
+    );
+});
+
 
 // Start Server
 const PORT = process.env.PORT || 8080;

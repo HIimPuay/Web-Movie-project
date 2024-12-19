@@ -43,9 +43,9 @@ function Login({ onLogin }) {
     return (
         <div className="login-container">
             <div className="login-box">
-                <button className="close-button" onClick={handleClose}>
+                <div className="close-button" onClick={handleClose}>
                     ✖
-                </button>
+                </div>
                 <div className="login-form">
                     <h2>Sign up</h2>
                     <p>If you already have an account register You Can <a href="/Login">Login here!</a></p>

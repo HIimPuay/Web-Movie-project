@@ -104,6 +104,9 @@ function ThisMovie() {
             </div>
 
             {/* Add Comments Section */}
+            <button className="add-comment-btn" onClick={() => setPopupVisible(true)}>
+                เพิ่มคอมเมนต์
+            </button>
             <div className="comments">
                 <h2>ความคิดเห็น</h2>
                 {reviews.map((review) => (
@@ -116,9 +119,7 @@ function ThisMovie() {
                 ))}
             </div>
 
-            <button className="add-comment-btn" onClick={() => setPopupVisible(true)}>
-                เพิ่มคอมเมนต์
-            </button>
+            
 
             {/* Popup */}
             {popupVisible && (

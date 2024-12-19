@@ -4,7 +4,7 @@ import './styles/Footer.css'
 function Footer() {
     return (
         <footer className="footer-web">
-            <img src="#" alt=""  className="Logo"/>
+            <img src="/src/assets/logo.svg" alt=""  className="Logo"/>
             <div className="footer-message">
                 <h3>Hi, Team dev</h3>
                 <p>

@@ -41,14 +41,16 @@ function Trending() {
             <div className="trending-main">
                 <button className="nav-button left" onClick={goLeft}>❮</button>
                 <div className="trending-thumbnail">
+                <Link to={`/movies/${currentMovie.movie_id}`} className="movie-link">
                     <img src={currentMovie.image} alt={currentMovie.title} /> {/* แสดงภาพหนัง */}
+                </Link>
                 </div>
                 <button className="nav-button right" onClick={goRight}>❯</button>
                 <div className='movie-info'>
                     <Link to={`/movies/${currentMovie.movie_id}`} className="movie-link">
-                        <div className="movie-title">{currentMovie.title}</div>
+                        <h4 className="movie-title">{currentMovie.title}</h4>
                     </Link>
-                    <div className="movie-description">{currentMovie.des}</div> {/* แสดงคำบรรยาย */}
+                    <h5 className="movie-description">{currentMovie.des}</h5> {/* แสดงคำบรรยาย */}
                 </div>
             </div>
         </div>

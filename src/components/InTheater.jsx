@@ -42,7 +42,7 @@ function InTheater() {
         <div className="in-theater">
             <h2>In Theater</h2>
             <div className="theater-movies">
-                <button className="nav-button left">❮</button>
+            <button className="nav-button left" onClick={() => moveCarousel("left", comedyRef)}>❮</button>
                 <div className="movie-cards" ref={comedyRef}>
                     {movies.map((movie, index) => (
                         <Link to={`/movies/${movie.movie_id}`}>
@@ -55,7 +55,7 @@ function InTheater() {
                         </Link>
                     ))}
                 </div>
-                <button className="nav-button right">❯</button>
+                <button className="nav-button right" onClick={() => moveCarousel("right", comedyRef)}>❯</button>
             </div>
         </div>
     );

@@ -17,7 +17,7 @@ console.log('JWT_SECRET:', process.env.JWT_SECRET);
 const db = mysql.createConnection({
     host: process.env.DB_HOST || 'localhost',
     user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || '1904',
+    password: process.env.DB_PASSWORD || 'css222',
     database: process.env.DB_NAME || 'movie_review_web',
     port: process.env.DB_PORT || '3306'
 });
@@ -108,6 +108,46 @@ app.post('/api/movies/:id/reviews', authenticateToken, async (req, res) => {
     }
 });
 
+// Fetch user profile (Protected Route)
+app.get('/api/user/profile', (req, res) => {
+    const token = req.headers.authorization?.split(' ')[1];
+
+    if (!token) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    try {
+        const secret = process.env.JWT_SECRET;
+        const decoded = jwt.verify(token, secret);
+
+        // ดึง user_id จาก token ที่ decode
+        const userId = decoded.userId;
+
+        // Query จากฐานข้อมูล
+        db.query('SELECT user_id, user_name, email FROM users WHERE user_id = ?', [userId], (err, results) => {
+            if (err) {
+                console.error('Database error:', err.message);
+                return res.status(500).json({ error: 'Database error' });
+            }
+
+            if (results.length === 0) {
+                return res.status(404).json({ error: 'User not found' });
+            }
+
+            // ส่งข้อมูล user กลับไปยัง frontend
+            const user = results[0];
+            res.json(user);
+        });
+    } catch (err) {
+        console.error('Token error:', err.message);
+        res.status(401).json({ error: 'Invalid token' });
+    }
+});
+
+
+
+
+
 // Fetch movies by category
 app.get('/api/movies/category/:category', (req, res) => {
     const categoryMap = { action: 1, romance: 2, comedy: 3, drama: 4, horror: 5 };
@@ -192,6 +232,46 @@ app.post('/api/login', async (req, res) => {
     } catch (err) {
         res.status(500).json({ error: 'Internal server error.' });
     }
+});
+
+// Search for movies by name
+app.get('/api/movies/search', (req, res) => {
+    const searchQuery = req.query.q;
+
+    if (!searchQuery) {
+        return res.status(400).json({ error: 'Search query is required.' });
+    }
+
+    const query = 'SELECT * FROM movies WHERE title LIKE ?';
+    const values = [`%${searchQuery}%`];
+
+    db.query(query, values, (err, results) => {
+        if (err) {
+            console.error('Error in search query:', err.message);
+            return res.status(500).json({ error: 'Database query error' });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({ error: 'No movies found' });
+        }
+
+        res.json(results);
+    });
+});
+
+app.delete('/api/movies/:id', (req, res) => {
+    const { id } = req.params;
+    const sql = 'DELETE FROM movies WHERE movie_id = ?';
+
+    db.query(sql, [id], (err, result) => {
+        if (err) {
+            res.status(500).send(err);
+        } else if (result.affectedRows === 0) {
+            res.status(404).send({ message: 'Movie not found' });
+        } else {
+            res.send({ message: 'Movie deleted successfully' });
+        }
+    });
 });
 
 // Start Server

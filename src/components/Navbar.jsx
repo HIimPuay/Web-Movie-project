@@ -1,63 +1,97 @@
-// client/src/components/Navbar.js
 import React, { useState } from 'react';
 import './styles/Navbar.css';
 import { Link } from "react-router-dom";
 import { FaBars, FaSearch, FaUser } from 'react-icons/fa';
-
+import axios from 'axios';
 
 function Navbar({ isLoggedIn, onLogout }) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchResults, setSearchResults] = useState([]);
+    const [isLoading, setIsLoading] = useState(false); // For loading state
+    const [error, setError] = useState(null); // For error state
 
-    // ฟังก์ชันสำหรับเปิด/ปิดเมนู
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen);
     };
+
+    const handleSearch = async (e) => {
+        e.preventDefault();
+        if (!searchQuery.trim()) return; // Prevent empty searches
+
+        setIsLoading(true); // Set loading to true
+        setError(null); // Clear previous errors
+        setSearchResults([]); // Clear previous results
+
+        try {
+            const response = await axios.get(`http://localhost:8080/api/movies/search?q=${searchQuery}`);
+            setSearchResults(response.data);
+        } catch (err) {
+            console.error('Error fetching search results:', err);
+            setError('Unable to fetch search results. Please try again.');
+        } finally {
+            setIsLoading(false); // Set loading to false
+        }
+    };
+
     return (
-     
         <nav className="navbar">
             <div className="navbar-logo">
-                <Link to="/"><img src="path_to_logo" alt="Logo" className="logo-image" /></Link>  
+                <Link to="/"><img src="/src/assets/logo.svg" alt="Logo" className="logo-image" /></Link>
             </div>
             <div className="navbar-search">
-                <input type="text" placeholder="Search" />
-                <button className="search-button">
-                    <FaSearch />
-                </button>
+                <form onSubmit={handleSearch}>
+                    <input
+                        type="text"
+                        placeholder="Search"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                    <button className="search-button" type="submit">
+                        <FaSearch />
+                    </button>
+                </form>
+                {isLoading && <p>Loading...</p>}
+                {error && <p className="error-message">{error}</p>}
+                {searchResults.length > 0 ? (
+                    <div className="search-results">
+                        {searchResults.map((movie) => (
+                            <div key={movie.movie_id}>
+                                <Link to={`/movies/${movie.movie_id}`}>{movie.title}</Link>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    !isLoading && searchQuery && <p className="no-results">No results found.</p>
+                )}
             </div>
             <div className="navbar-links">
                 <button className="menu-button" onClick={toggleMenu}>
                     <FaBars />
                     <span>MENU</span>
-                    
                 </button>
                 {isMenuOpen && (
-                <div className="dropdown-menu">
-                  <Link to="/">HOME</Link>
-                  <Link to="/Category">Category</Link>
-
-                  {/* เพิ่มลิงก์เมนูที่ต้องการ */}
-                </div>
+                    <div className="dropdown-menu">
+                        <Link to="/">HOME</Link>
+                        <Link to="/Category">Category</Link>
+                    </div>
                 )}
                 {!isLoggedIn ? (
-                    // หากไม่ได้ล็อกอิน จะแสดงปุ่ม Sign In
                     <button className="navbar-icon">
                         <Link to="/login">Sign In</Link>
                     </button>
-                 ) : (
-                <>
-                  {/* หากล็อกอินแล้ว จะแสดงปุ่ม Profile */}
-                  <button className="navbar-icon">
-                    <Link to="/profile">
-                      <FaUser /> Profile
-                    </Link>
-                  </button>
-                  {/* ปุ่ม Logout */}
-                  <button onClick={onLogout}>Logout</button>
-                </>
+                ) : (
+                    <>
+                        <button className="navbar-icon">
+                            <Link to="/Profile">
+                                <FaUser /> Profile
+                            </Link>
+                        </button>
+                        <button onClick={onLogout}>Logout</button>
+                    </>
                 )}
             </div>
         </nav>
-        
     );
 }
 

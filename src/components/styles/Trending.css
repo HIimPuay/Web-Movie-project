@@ -17,7 +17,7 @@
 }
 
 .trending-thumbnail {
-    background-color: #ccc;
+    
     width: 50%;
     height: 400px;
     display: flex;
@@ -35,4 +35,20 @@
     font-size: 30px;
     border: none;
     cursor: pointer;
+}
+
+.trending-thumbnail img {
+    max-width: 100%; /* ทำให้รูปภาพไม่ใหญ่เกินกว่าความกว้างของ container */
+    max-height: 100%; /* ทำให้รูปภาพไม่สูงเกินกว่าความสูงของ container */
+    object-fit: contain; /* ให้รูปภาพย่อให้พอดีกับขนาดโดยไม่เสียสัดส่วน */
+    height: 400px;
+}
+
+.movie-info h4 {
+    font-size: 40px;
+}
+.movie-info h5 {
+    color: aliceblue;
+    font-size: 16px;
+    width: 80%;
 }
